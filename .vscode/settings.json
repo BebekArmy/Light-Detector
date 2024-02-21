@@ -1,0 +1,14 @@
+{
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "files.associations": {
+        "game_application.h": "c",
+        "display.h": "c",
+        "stdbool.h": "c",
+        "stdlib.h": "c",
+        "stdio.h": "c",
+        "ioctl.h": "c",
+        "general_command.h": "c",
+        "potentiometer.h": "c",
+        "period_timer.h": "c"
+    }
+}
