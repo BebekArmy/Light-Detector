@@ -27,12 +27,15 @@ static void printSample(){
 
 
     printf("Smpl/s = %d POT @ %d = %dHz avg = %.3fV dips = %d \n", sample, potentiometer[0], potentiometer[1], averageSample, 0);
-    //printf("Smpl ms [ %.3f, %.3f, %.3f] avg %.3f/%d\n", minSample, maxSample, averageSample, averageSample, samples);
+    
 }
 
 static void timingJitter(){
     Period_statistics_t pStats;
     Period_getStatisticsAndClear(PERIOD_EVENT_SAMPLE_LIGHT, &pStats);
+    //printf("Smpl ms [ %.3f, %.3f, %.3f] avg %.3f/%d\n", minSample, maxSample, averageSample, averageSample, samples);
+
+    //Timing jitter information (provided by periodTimer.h/.c) for samples collected during the previous second (section 1.7 ) Minimum time between light samples. Maximum time between light samples. Average time between light samples. Number of times sampled Format: Smpl ms[{min}, {max}] avg {avg}/{num-samples}
     
 }
 
