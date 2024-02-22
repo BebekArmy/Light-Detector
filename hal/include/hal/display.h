@@ -9,7 +9,7 @@ unsigned char readI2cReg(int i2cFileDesc, unsigned char regAddr);
 void writeToFile(const char *file, const char *value);
 void runCommandDisplay(char* command);
 void initializeDisplay();
-void setDisplay(int left, int right);
+void setDisplay(int value);
 void *displayDigits(void *args);
 void createDisplayThread();
 void joinDisplayThread();

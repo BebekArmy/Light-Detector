@@ -8,6 +8,9 @@
 #include "udp.h"
 #include "period_timer.h"
 #include "sampler.h"
+#include "print_result.h"
+
+#include "mutex.h"
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -18,9 +21,13 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <pthread.h>
+
+
 #define MSG_MAX_LEN 1024
 #define PORT        12345
 
+pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void testDisplay()
 {
@@ -28,10 +35,10 @@ void testDisplay()
 
     createDisplayThread();
     
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < 13; i++)
     {
-        setDisplay(i, i+1);
-        sleepForMs(1000);
+        setDisplay(i);
+        sleepForMs(500);
     }
 
     
@@ -82,6 +89,7 @@ void testPWMLED()
 
 }
 
+
 void createThreads()
 {
     Period_init();
@@ -98,6 +106,8 @@ void createThreads()
     createUDPThread();
 
     createSamplerThread();
+
+    createPrintingThread();
 }
 
 void joinThreads()
@@ -114,6 +124,9 @@ void joinThreads()
     joinPWMLEDThread();
     joinLightSensorThread();
     joinSamplerThread();
+
+    joinPrintingThread();
+
     Period_cleanup();
 }
 

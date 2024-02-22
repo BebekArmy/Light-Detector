@@ -29,10 +29,16 @@ double Sampler_getAverageReading(void);
 long long Sampler_getNumSamplesTaken(void);
 
 
+void setHistorySize(int);
+
 int getHistorySize();
-int getSamplesTaken();
-int getAverageVoltage();
-int *getHistoryBuffer();
+long long getSamplesTaken();
+double getAverageVoltage();
+double *getHistoryBuffer();
+
+void moveCurrentDataToHistory();
+int analyzeLightDips();
+
 void createSamplerThread();
 void joinSamplerThread();
 void shutdownSampler();

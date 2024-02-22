@@ -95,7 +95,7 @@ void *displayUDPcommands(void *args){
         //command for count (get the total number of samples taken so far)
         else if (strncmp(messageRx, "count", strlen("count")) == 0) {
             char messageTx[MSG_MAX_LEN];
-            sprintf(messageTx, "Count: %d\n", getSamplesTaken());
+            sprintf(messageTx, "Count: %lld\n", getSamplesTaken());
             sin_len = sizeof(sinRemote);
             sendto( socketDescriptor,
                 messageTx, strlen(messageTx),

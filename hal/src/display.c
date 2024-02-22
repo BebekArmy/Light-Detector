@@ -104,9 +104,22 @@ void initializeDisplay(){
 
 }
 
-void setDisplay(int left, int right) {
-    digit_left = left;
-    digit_right = right;
+void setDisplay(int value) {
+    // Check if value is greater than 99
+    if (value > 99) {
+        digit_left = 9;
+        digit_right = 9;
+    }
+    // Check if value is less than 10
+    else if (value < 10) {
+        digit_left = 0;
+        digit_right = value;
+    }
+    // Otherwise, set digits accordingly
+    else {
+        digit_left = value / 10;
+        digit_right = value % 10;
+    }
 }
 
 void *displayDigits(void *args) {
