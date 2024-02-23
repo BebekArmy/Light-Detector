@@ -15,25 +15,24 @@
 #define A2D_MAX_READING    4095
 #define HZ_CONVERSION     40
 #define SAMPLES_PER_SECOND 20
-#define SAMPLE_THRESHOLD 20
-
 
 static pthread_t printingThread;
 static bool shutdown = false;
-
 
 static void printSample(int dips){
     int sample = getCurrentSize();
     int potentiometer[2] = {getVoltage0Reading(), getVoltage0Reading() / HZ_CONVERSION};
     double averageSample = getAverageVoltage();
 
-    printf("Smpl/s = %4d\tPOT @ %4d => %4dHz\tavg = %.3fV\tdips = %4d", sample, potentiometer[0], potentiometer[1], averageSample, dips);
+    printf("Smpl/s = %4d\tPOT @ %4d => %4dHz\tavg = %.3fV\tdips = %4d", sample, potentiometer[0],
+     potentiometer[1], averageSample, dips);
 }
 
 static void printTimingJitter(){
     Period_statistics_t pStats;
     Period_getStatisticsAndClear(PERIOD_EVENT_SAMPLE_LIGHT, &pStats);
-    printf("\tSmpl ms[%6.3f, %6.3f] avg %.3f/%d\n", pStats.minPeriodInMs, pStats.maxPeriodInMs, pStats.avgPeriodInMs, pStats.numSamples);    
+    printf("\tSmpl ms[%6.3f, %6.3f] avg %.3f/%d\n", pStats.minPeriodInMs, pStats.maxPeriodInMs,
+     pStats.avgPeriodInMs, pStats.numSamples);    
 }
 
 // Line 2: print 20 samples from the previous second
@@ -49,71 +48,48 @@ static void printRecentSamples(){
         }
     }
     else {
-        int step = totalSamples / SAMPLES_PER_SECOND;  // Calculate the step size
+        int step = totalSamples / SAMPLES_PER_SECOND;
         for (int i = 0; i < totalSamples; i += step) {
             printf("%d:%.3f  ", i, history[i]);
         }
     }
     printf("\n");
-
 }
 
 void *printing(void *args){
     (void)args;
+    
+    sleepForMs(1100); // skip first print because no history yet
 
     pthread_mutex_t* mutex = get_mutex();
+
     while(!shutdown){
         
-        // long long start = getTimeInMs();
-        // long long elapsed = 0;
         int dips = 0;
 
-        // while(elapsed < 1000){
-            // elapsed = getTimeInMs() - start;
-        
         pthread_mutex_lock(mutex);
 
-        if(getCurrentSize() < SAMPLE_THRESHOLD  ){
-            pthread_mutex_unlock(mutex);
-            sleepForMs(1000);
-            continue;
-        }
-        
         moveCurrentDataToHistory();
 
         pthread_mutex_unlock(mutex);
         
         dips = analyzeLightDips();
-
         setHistoryDips(dips);
 
         pthread_mutex_lock(mutex);
 
         setDisplay(dips);
-
-        
-
         printSample(dips);
-
         printTimingJitter();
-
         printRecentSamples();
-
         setHistorySize(getCurrentSize());
         setCurrentSize(0);
         
-
         pthread_mutex_unlock(mutex);
 
         sleepForMs(1000);
-            // Calculate the remaining time to wait before the next second
-            // long long remainingTime = 1000 - elapsed;
+    } 
 
-            // // Check for positive remaining time before sleeping
-            // if (remainingTime > 0) {
-            //     sleepForMs(remainingTime);
-            // }
-        } 
     return NULL;
 }
 
@@ -128,4 +104,3 @@ void joinPrintingThread(){
 void shutdownPrintingThread(){
     shutdown = true;
 }
-

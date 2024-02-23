@@ -24,7 +24,6 @@
 #define GPIO61_export "/sys/class/gpio/export"
 #define GPIO44_export "/sys/class/gpio/export"
 
-
 #define I2C_DEVICE_ADDRESS 0x20 
 #define REG_DIRA 0x00 // Zen Red uses: 0x02 
 #define REG_DIRB 0x01 // Zen Red uses: 0x03 
@@ -59,7 +58,6 @@ static void writeI2cReg(int i2cFileDesc, unsigned char regAddr, unsigned char va
         exit(1); 
     } 
 }
-
 
 void initializeDisplay(){
     runCommand("config-pin P9_18 i2c");

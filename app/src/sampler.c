@@ -62,41 +62,15 @@ double getAverageVoltage(){
     return averageVoltage;
 }
 
-
 double *getHistoryBuffer(){
     return historyBuffer;
-
-    // pthread_mutex_lock(&data_mutex);
-
-    // // Copy samples to a new array
-    // double* history_copy = (double*)malloc(currentSize * sizeof(double));
-    // for (int i = 0; i < currentSize; ++i) {
-    //     history_copy[i] = historyBuffer[i];
-    // }
-
-    // pthread_mutex_unlock(&data_mutex);
-
-    // return history_copy;
 }
 
 void moveCurrentDataToHistory() {
-
-    //pthread_mutex_lock(&data_mutex);
-    
-
-
-    //free(historyBuffer); // Free previous history
-
     // Move current samples to history
      for (int i = 0; i < currentSize; ++i) {
         historyBuffer[i] = currentBuffer[i];
     }
-
-    // Reset current samples
-    //currentBuffer = NULL;
-    //currentSize = 0;
-
-    //pthread_mutex_unlock(&data_mutex);
 }
 
 int analyzeLightDips() {
@@ -174,4 +148,3 @@ void joinSamplerThread(){
 void shutdownSampler(){
     shutdown = true;
 }
-

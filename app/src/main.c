@@ -24,68 +24,6 @@
 #define MSG_MAX_LEN 1024
 #define PORT        12345
 
-
-void testDisplay()
-{
-    initializeDisplay();
-
-    createDisplayThread();
-    
-    for(int i = 0; i < 13; i++)
-    {
-        setDisplay(i);
-        sleepForMs(500);
-    }
-
-    
-}
-
-void testPotentiometer()
-{
-    createPotentiometerThread();
-
-    int n = 0;
-    while(n<5){
-        sleepForMs(1000);
-        printf("Voltage Reading: %d\n", getVoltage0Reading());
-        printf("Real World Voltage: %f\n", getRealWorldVoltage0());
-        
-        n++;
-    }
-
-    
-}
-
-
-void testLightSensor()
-{
-    createLightSensorThread();
-
-    int n = 0;
-    while(n<5){
-        sleepForMs(1000);
-        printf("Voltage Reading: %d\n", getVoltage1Reading());
-        printf("Real World Voltage: %f\n", getRealWorldVoltage1());
-        
-        n++;
-    }
-
-    
-}
-
-void testPWMLED()
-{
-    initializePWMLED();
-
-    createPotentiometerThread();
-    createPWMLEDThread();
-
-    sleepForMs(10000);
-
-
-}
-
-
 void createThreads()
 {
     Period_init();
@@ -125,37 +63,11 @@ void joinThreads()
     joinPWMLEDThread();
     joinLightSensorThread();
 
-
     Period_cleanup();
 }
 
 int main()
 {
-    // testDisplay();
-
-    // testPotentiometer();
-
-    // testLightSensor();
-
-    // testPWMLED();
-
-
-
-    // shutdownDisplay();
-    // joinDisplayThread();
-
-    // shutdownLightSensor();
-    // joinLightSensorThread();
-
-    // shutdownPWMLED();
-    // joinPWMLEDThread();
-
-    // shutdownPotentiometer();
-    // joinPotentiometerThread();
-
-    // createUDPThread();
-    // joinUDPThread();
-
     bool isRunning = true;
 
     createThreads();
@@ -167,10 +79,5 @@ int main()
     joinThreads();
     
 
-
-
-    
-
     return 0;
-    
 }

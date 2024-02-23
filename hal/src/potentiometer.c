@@ -47,16 +47,13 @@ double getRealWorldVoltage0(){
 }
 
 void createPotentiometerThread() {
-    //printf("Creating Potentiometer Thread\n");
     pthread_create(&potentiometerThread, NULL, updateVoltage0Reading, NULL);
 }
 
 void joinPotentiometerThread() {
-    //printf("Joining Potentiometer Thread\n");
     pthread_join(potentiometerThread, NULL);
 }
 
 void shutdownPotentiometer() { 
-    //printf("Shutting down Potentiometer\n");
     shutdown = true; 
 }

@@ -11,9 +11,7 @@
 #define HZ_CONVERSION 40
 
 static bool shutdown = false;
-
 static pthread_t pwmLEDThread;
-
 static int previousHz = 0;
 
 void initializePWMLED(){
@@ -36,7 +34,6 @@ void *setPWMLED(void *args){
             continue;
         }
         else if(previousHz == hz){
-            //printf("light sensor reading: %d\n", getVoltage1Reading());
             sleepForMs(100);
             continue;
         }
@@ -51,11 +48,8 @@ void *setPWMLED(void *args){
 
             previousHz = hz;
 
-
             int period = 1000000000 / hz;
             int duty_cycle = period / 2;
-
-
 
             char periodStr[20];
             char dutyStr[20];
@@ -68,24 +62,19 @@ void *setPWMLED(void *args){
             writeToFile(PWM_LED_PATH "/duty_cycle", dutyStr);
             sleepForMs(100);
         }
-
     }
     writeToFile(PWM_LED_PATH "/enable", "0");
     return NULL;
 }
 
 void createPWMLEDThread(){
-    //printf("Creating PWM LED Thread\n");
     pthread_create(&pwmLEDThread, NULL, setPWMLED, NULL);
 }
 
 void joinPWMLEDThread(){
-    //printf("Joining PWM LED Thread\n");
     pthread_join(pwmLEDThread, NULL);
 }
 
 void shutdownPWMLED(){
-    //printf("Shutting down PWM LED\n");
     shutdown = true;
 }
-

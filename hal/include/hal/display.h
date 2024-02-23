@@ -1,8 +1,11 @@
 #ifndef _DISPLAY_H_
 #define _DISPLAY_H_
 
-#include <stdint.h>
+/* Module to initialize and cleanup the 14-segment display and display thread that handles it.
+Supports displaying numbers 0-99.
+*/
 
+#include <stdint.h>
 
 void runCommandDisplay(char* command);
 void initializeDisplay();
@@ -11,6 +14,5 @@ void *displayDigits(void *args);
 void createDisplayThread();
 void joinDisplayThread();
 void shutdownDisplay();
-
 
 #endif
