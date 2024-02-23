@@ -6,8 +6,6 @@
 #include "hal/general_command.h"
 #include "period_timer.h"
 
-#include "mutex.h"
-
 #include <pthread.h>
 #include <string.h>
 #include <stdio.h>
@@ -21,6 +19,8 @@
 
 static pthread_t sampleThread;
 
+static pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 static bool shutdown = false;
 
 static int currentSize = 0;
@@ -31,7 +31,9 @@ static int historyDips = 0;
 static double currentBuffer[BUFFER_SIZE];
 static double historyBuffer[BUFFER_SIZE];
 
-
+pthread_mutex_t* get_mutex() {
+    return &data_mutex;
+}
 void setCurrentSize(int size){
     currentSize = size;
 }

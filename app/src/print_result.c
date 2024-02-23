@@ -6,8 +6,6 @@
 #include "hal/general_command.h"
 #include "period_timer.h"
 
-#include "mutex.h"
-
 #include <pthread.h>
 #include <string.h>
 #include <stdio.h>
@@ -17,6 +15,7 @@
 #define A2D_MAX_READING    4095
 #define HZ_CONVERSION     40
 #define SAMPLES_PER_SECOND 20
+#define SAMPLE_THRESHOLD 20
 
 
 static pthread_t printingThread;
@@ -61,9 +60,10 @@ static void printRecentSamples(){
 
 void *printing(void *args){
     (void)args;
-    
+
+    pthread_mutex_t* mutex = get_mutex();
     while(!shutdown){
-        sleepForMs(1000);
+        
         // long long start = getTimeInMs();
         // long long elapsed = 0;
         int dips = 0;
@@ -71,17 +71,23 @@ void *printing(void *args){
         // while(elapsed < 1000){
             // elapsed = getTimeInMs() - start;
         
-        pthread_mutex_lock(&data_mutex);
+        pthread_mutex_lock(mutex);
+
+        if(getCurrentSize() < SAMPLE_THRESHOLD  ){
+            pthread_mutex_unlock(mutex);
+            sleepForMs(1000);
+            continue;
+        }
         
         moveCurrentDataToHistory();
 
-        pthread_mutex_unlock(&data_mutex);
+        pthread_mutex_unlock(mutex);
         
         dips = analyzeLightDips();
 
         setHistoryDips(dips);
 
-        pthread_mutex_lock(&data_mutex);
+        pthread_mutex_lock(mutex);
 
         setDisplay(dips);
 
@@ -97,8 +103,9 @@ void *printing(void *args){
         setCurrentSize(0);
         
 
-        pthread_mutex_unlock(&data_mutex);
+        pthread_mutex_unlock(mutex);
 
+        sleepForMs(1000);
             // Calculate the remaining time to wait before the next second
             // long long remainingTime = 1000 - elapsed;
 

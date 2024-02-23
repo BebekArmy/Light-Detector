@@ -10,8 +10,6 @@
 #include "sampler.h"
 #include "print_result.h"
 
-#include "mutex.h"
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
@@ -20,14 +18,12 @@
 #include <netdb.h>
 #include <string.h>
 #include <unistd.h>
-
 #include <pthread.h>
 
 
 #define MSG_MAX_LEN 1024
 #define PORT        12345
 
-pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void testDisplay()
 {
@@ -113,21 +109,22 @@ void createThreads()
 
 void joinThreads()
 {
-    shutdownDisplay();
-    shutdownPotentiometer();
-    shutdownPWMLED();
-    shutdownLightSensor();
     shutdownSampler();
     shutdownPrintingThread();
+    shutdownDisplay();
+    shutdownPWMLED();
+    shutdownPotentiometer();
+    shutdownLightSensor();
 
+
+    joinSamplerThread();
+    joinPrintingThread();
     joinUDPThread();
     joinDisplayThread();
     joinPotentiometerThread();
     joinPWMLEDThread();
     joinLightSensorThread();
-    joinSamplerThread();
 
-    joinPrintingThread();
 
     Period_cleanup();
 }

@@ -133,16 +133,16 @@ void *displayDigits(void *args) {
 }
 
 void createDisplayThread() {
-    printf("Creating Display Thread\n");
+    //printf("Creating Display Thread\n");
     pthread_create(&displayThread, NULL, displayDigits, NULL);
 }
 
 void joinDisplayThread() {
-    printf("Joining Display Thread\n");
+    //printf("Joining Display Thread\n");
     pthread_join(displayThread, NULL);
 }
 
 void shutdownDisplay() {
-    printf("Shutting down Display\n");
+    //printf("Shutting down Display\n");
     shutdown = true;
 }

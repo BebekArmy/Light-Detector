@@ -46,16 +46,16 @@ double getRealWorldVoltage1(){
 }
 
 void createLightSensorThread() {
-    printf("Creating Light Sensor Thread\n");
+    //printf("Creating Light Sensor Thread\n");
     pthread_create(&lightSensorThread, NULL, updateVoltage1Reading, NULL);
 }
 
 void joinLightSensorThread() {
-    printf("Joining Light Sensor Thread\n");
+    //printf("Joining Light Sensor Thread\n");
     pthread_join(lightSensorThread, NULL);
 }
 
 void shutdownLightSensor() { 
-    printf("Shutting down Light Sensor\n");
+    //printf("Shutting down Light Sensor\n");
     shutdown = true; 
 }

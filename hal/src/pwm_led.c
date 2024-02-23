@@ -23,17 +23,19 @@ void initializePWMLED(){
 
 }
 
-//set pwm led according to the raw value of potentiometer. raw value is between 0 and 4095. set the led to be raw value / 40 Hz. make the duty cycle to be 50%.
-
 void *setPWMLED(void *args){
     (void)args;
     
     while(!shutdown){
+        writeToFile(PWM_LED_PATH "/enable", "1");
         int rawValue = getVoltage0Reading();
         int hz = rawValue/ HZ_CONVERSION;
-;
-
-        if(previousHz == hz){
+        if(hz == 0){
+            writeToFile(PWM_LED_PATH "/enable", "0");
+            sleepForMs(100);
+            continue;
+        }
+        else if(previousHz == hz){
             //printf("light sensor reading: %d\n", getVoltage1Reading());
             sleepForMs(100);
             continue;
@@ -41,15 +43,12 @@ void *setPWMLED(void *args){
 
         else{
 
-            if(hz == 0){
-                writeToFile(PWM_LED_PATH "/enable", "0");
-                sleepForMs(100);
-                writeToFile(PWM_LED_PATH "/enable", "1");
-                continue;
-            }
             if(hz < 1){
                 hz = 1;
             }
+
+            writeToFile(PWM_LED_PATH "/enable", "1");
+
             previousHz = hz;
 
 
@@ -76,17 +75,17 @@ void *setPWMLED(void *args){
 }
 
 void createPWMLEDThread(){
-    printf("Creating PWM LED Thread\n");
+    //printf("Creating PWM LED Thread\n");
     pthread_create(&pwmLEDThread, NULL, setPWMLED, NULL);
 }
 
 void joinPWMLEDThread(){
-    printf("Joining PWM LED Thread\n");
+    //printf("Joining PWM LED Thread\n");
     pthread_join(pwmLEDThread, NULL);
 }
 
 void shutdownPWMLED(){
-    printf("Shutting down PWM LED\n");
+    //printf("Shutting down PWM LED\n");
     shutdown = true;
 }
 

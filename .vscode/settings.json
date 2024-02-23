@@ -9,6 +9,7 @@
         "ioctl.h": "c",
         "general_command.h": "c",
         "potentiometer.h": "c",
-        "period_timer.h": "c"
+        "period_timer.h": "c",
+        "unistd.h": "c"
     }
 }
