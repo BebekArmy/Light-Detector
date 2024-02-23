@@ -11,5 +11,5 @@ target_link_libraries(light_dip LINK_PRIVATE hal)
 add_custom_command(TARGET light_dip POST_BUILD 
   COMMAND "${CMAKE_COMMAND}" -E copy 
      "$<TARGET_FILE:light_dip>"
-     "~/cmpt433/public/myApps/light_dip" 
+     "~/cmpt433/public/Assignment 2/light_dip" 
   COMMENT "Copying ARM executable to public NFS directory")

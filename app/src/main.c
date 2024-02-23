@@ -93,6 +93,7 @@ void testPWMLED()
 void createThreads()
 {
     Period_init();
+    
     initializeDisplay();
     createDisplayThread();
 
@@ -117,6 +118,7 @@ void joinThreads()
     shutdownPWMLED();
     shutdownLightSensor();
     shutdownSampler();
+    shutdownPrintingThread();
 
     joinUDPThread();
     joinDisplayThread();

@@ -29,9 +29,14 @@ double Sampler_getAverageReading(void);
 long long Sampler_getNumSamplesTaken(void);
 
 
+void setCurrentSize(int);
 void setHistorySize(int);
+void setHistoryDips(int);
 
 int getHistorySize();
+int getCurrentSize();
+int getHistoryDips();
+
 long long getSamplesTaken();
 double getAverageVoltage();
 double *getHistoryBuffer();

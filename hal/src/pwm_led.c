@@ -8,6 +8,7 @@
 #include <pthread.h>
 
 #define PWM_LED_PATH "/dev/bone/pwm/0/b"
+#define HZ_CONVERSION 40
 
 static bool shutdown = false;
 
@@ -29,7 +30,8 @@ void *setPWMLED(void *args){
     
     while(!shutdown){
         int rawValue = getVoltage0Reading();
-        int hz = rawValue/ 40;
+        int hz = rawValue/ HZ_CONVERSION;
+;
 
         if(previousHz == hz){
             //printf("light sensor reading: %d\n", getVoltage1Reading());
@@ -38,12 +40,17 @@ void *setPWMLED(void *args){
         }
 
         else{
+
+            if(hz == 0){
+                writeToFile(PWM_LED_PATH "/enable", "0");
+                sleepForMs(100);
+                writeToFile(PWM_LED_PATH "/enable", "1");
+                continue;
+            }
             if(hz < 1){
                 hz = 1;
             }
             previousHz = hz;
-            printf("raw value: %d\n", rawValue);
-            printf("Setting PWM LED to %d Hz\n", hz);
 
 
             int period = 1000000000 / hz;
@@ -63,7 +70,6 @@ void *setPWMLED(void *args){
             sleepForMs(100);
         }
 
-        //printf("light sensor reading: %d\n", getVoltage1Reading());
     }
     writeToFile(PWM_LED_PATH "/enable", "0");
     return NULL;

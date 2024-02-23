@@ -16,24 +16,40 @@
 
 #define BUFFER_SIZE 2000
 #define DATA_WEIGHT 0.001
+#define DIP_THRESHOLD 0.1
+#define HYSTERESIS 0.03
 
 static pthread_t sampleThread;
 
 static bool shutdown = false;
 
+static int currentSize = 0;
 static int historySize = 0;
 static long long samplesTaken = 0;
 static double averageVoltage = 0.0;
+static int historyDips = 0;
 static double currentBuffer[BUFFER_SIZE];
 static double historyBuffer[BUFFER_SIZE];
 
 
+void setCurrentSize(int size){
+    currentSize = size;
+}
 void setHistorySize(int size){
     historySize = size;
 }
+void setHistoryDips(int d){
+    historyDips = d;
+}
 
+int getCurrentSize(){
+    return currentSize;
+}
 int getHistorySize(){
     return historySize;
+}
+int getHistoryDips(){
+    return historyDips;
 }
 
 long long getSamplesTaken(){
@@ -51,8 +67,8 @@ double *getHistoryBuffer(){
     // pthread_mutex_lock(&data_mutex);
 
     // // Copy samples to a new array
-    // double* history_copy = (double*)malloc(historySize * sizeof(double));
-    // for (int i = 0; i < historySize; ++i) {
+    // double* history_copy = (double*)malloc(currentSize * sizeof(double));
+    // for (int i = 0; i < currentSize; ++i) {
     //     history_copy[i] = historyBuffer[i];
     // }
 
@@ -70,7 +86,7 @@ void moveCurrentDataToHistory() {
     //free(historyBuffer); // Free previous history
 
     // Move current samples to history
-     for (int i = 0; i < historySize; ++i) {
+     for (int i = 0; i < currentSize; ++i) {
         historyBuffer[i] = currentBuffer[i];
     }
 
@@ -86,7 +102,7 @@ int analyzeLightDips() {
     pthread_mutex_lock(&data_mutex);
 
     double* historySamples = historyBuffer;
-    int size = historySize;
+    int size = currentSize;
     double currentAverage = averageVoltage;
 
     pthread_mutex_unlock(&data_mutex);
@@ -94,8 +110,8 @@ int analyzeLightDips() {
     int dipCount = 0;
 
     // Define parameters for detecting dips
-    double dipThreshold = 0.1;
-    double hysteresis = 0.03;
+    double dipThreshold = DIP_THRESHOLD;
+    double hysteresis = HYSTERESIS;
     double dipTriggerThreshold = currentAverage - dipThreshold;
     double dipRecoveryThreshold = currentAverage - hysteresis;
 
@@ -129,19 +145,14 @@ static void *sampleLight(void *args){
         Period_markEvent(PERIOD_EVENT_SAMPLE_LIGHT);
 
         double light = getRealWorldVoltage1();
-        currentBuffer[historySize] = light;
-        historySize++;
+        currentBuffer[currentSize] = light;
+        currentSize++;
         samplesTaken++;
-
-        // not sure, probably unnecessary
-        if(historySize == BUFFER_SIZE) {
-            historySize = 0;
-        }
         
-        if(historySize == 0)
+        if(currentSize == 0)
             averageVoltage = light;
         else 
-            averageVoltage = light;
+            averageVoltage = light * DATA_WEIGHT + averageVoltage * (1 - DATA_WEIGHT);
 
         pthread_mutex_unlock(&data_mutex);
 

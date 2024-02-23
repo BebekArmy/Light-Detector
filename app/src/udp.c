@@ -9,7 +9,7 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-#define MSG_MAX_LEN 1024
+#define MSG_MAX_LEN 200000
 #define PORT        12345
 
 static pthread_t UDPThread;
@@ -66,6 +66,7 @@ void *displayUDPcommands(void *args){
                                 "dips: Get the number of dips in the previously completed second.\n"
                                 "history: Get all the samples in the previously completed second.\n"
                                 "stop: Cause the server program to end.\n"
+                                "<enter>: Repeat the previous command.\n"
                                 );
             sin_len = sizeof(sinRemote);
             sendto( socketDescriptor,
@@ -84,6 +85,7 @@ void *displayUDPcommands(void *args){
                                 "dips: Get the number of dips in the previously completed second.\n"
                                 "history: Get all the samples in the previously completed second.\n"
                                 "stop: Cause the server program to end.\n"
+                                "<enter>: Repeat the previous command.\n"
                                 );
             sin_len = sizeof(sinRemote);
             sendto( socketDescriptor,
@@ -95,7 +97,7 @@ void *displayUDPcommands(void *args){
         //command for count (get the total number of samples taken so far)
         else if (strncmp(messageRx, "count", strlen("count")) == 0) {
             char messageTx[MSG_MAX_LEN];
-            sprintf(messageTx, "Count: %lld\n", getSamplesTaken());
+            sprintf(messageTx, "Samples taken total: %lld\n", getSamplesTaken());
             sin_len = sizeof(sinRemote);
             sendto( socketDescriptor,
                 messageTx, strlen(messageTx),
@@ -106,7 +108,7 @@ void *displayUDPcommands(void *args){
         //command for length (get the number of samples taken in the previously completed second)
         else if (strncmp(messageRx, "length", strlen("length")) == 0) {
             char messageTx[MSG_MAX_LEN];
-            sprintf(messageTx, "Length: %d\n", getHistorySize());
+            sprintf(messageTx, "Samples taken last second: %d\n", getHistorySize());   
             sin_len = sizeof(sinRemote);
             sendto( socketDescriptor,
                 messageTx, strlen(messageTx),
@@ -117,7 +119,7 @@ void *displayUDPcommands(void *args){
         //command for dips
         else if (strncmp(messageRx, "dips", strlen("dips")) == 0) {
             char messageTx[MSG_MAX_LEN];
-            sprintf(messageTx, "Dips: not yet done\n");
+            sprintf(messageTx, "Dips: %d\n", getHistoryDips());
             sin_len = sizeof(sinRemote);
             sendto( socketDescriptor,
                 messageTx, strlen(messageTx),
@@ -128,7 +130,20 @@ void *displayUDPcommands(void *args){
         //command for history
         else if (strncmp(messageRx, "history", strlen("history")) == 0) {
             char messageTx[MSG_MAX_LEN];
-            sprintf(messageTx, "History: not yet done\n");
+            double *history = getHistoryBuffer();
+
+            //print the history and \n after every 10th element
+            for (int i = 0; i < getHistorySize(); i++) {
+                char temp[MSG_MAX_LEN];
+                sprintf(temp, "%.3f,  ", history[i]);
+                strcat(messageTx, temp);
+                if (i % 10 == 9) {
+                    strcat(messageTx, "\n");
+                }
+            }
+
+            strcat(messageTx, "\n");
+
             sin_len = sizeof(sinRemote);
             sendto( socketDescriptor,
                 messageTx, strlen(messageTx),
@@ -138,6 +153,13 @@ void *displayUDPcommands(void *args){
         
         //command for stop
         else if (strncmp(messageRx, "stop", strlen("stop")) == 0) {
+            char messageTx[MSG_MAX_LEN];
+            sprintf(messageTx, "Program Terminating\n");
+            sin_len = sizeof(sinRemote);
+            sendto( socketDescriptor,
+                messageTx, strlen(messageTx),
+                0,
+                (struct sockaddr *) &sinRemote, sin_len);
             programRunning = false;
 			break;
 		}

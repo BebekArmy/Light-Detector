@@ -15,6 +15,8 @@
 
 #define A2D_VOLTAGE_REF_V  1.8 
 #define A2D_MAX_READING    4095
+#define HZ_CONVERSION     40
+#define SAMPLES_PER_SECOND 20
 
 
 static pthread_t printingThread;
@@ -22,8 +24,8 @@ static bool shutdown = false;
 
 
 static void printSample(int dips){
-    int sample = getHistorySize();
-    int potentiometer[2] = {getVoltage0Reading(), getVoltage0Reading() / 40};
+    int sample = getCurrentSize();
+    int potentiometer[2] = {getVoltage0Reading(), getVoltage0Reading() / HZ_CONVERSION};
     double averageSample = getAverageVoltage();
 
     printf("Smpl/s = %4d\tPOT @ %4d => %4dHz\tavg = %.3fV\tdips = %4d", sample, potentiometer[0], potentiometer[1], averageSample, dips);
@@ -37,18 +39,18 @@ static void printTimingJitter(){
 
 // Line 2: print 20 samples from the previous second
 static void printRecentSamples(){
-    int totalSamples = getHistorySize();
+    int totalSamples = getCurrentSize();
 
     double *history = getHistoryBuffer();
     printf("  ");
     
-    if (totalSamples < 20) {
+    if (totalSamples < SAMPLES_PER_SECOND) {
         for (int i = 0; i < totalSamples; i++) {
             printf("%d:%.3f  ", i, history[i]);
         }
     }
     else {
-        int step = totalSamples / 20;  // Calculate the step size
+        int step = totalSamples / SAMPLES_PER_SECOND;  // Calculate the step size
         for (int i = 0; i < totalSamples; i += step) {
             printf("%d:%.3f  ", i, history[i]);
         }
@@ -59,48 +61,52 @@ static void printRecentSamples(){
 
 void *printing(void *args){
     (void)args;
+    
     while(!shutdown){
-        
-        long long start = getTimeInMs();
-        long long elapsed = 0;
+        sleepForMs(1000);
+        // long long start = getTimeInMs();
+        // long long elapsed = 0;
         int dips = 0;
 
-        while(elapsed < 1000){
-            elapsed = getTimeInMs() - start;
+        // while(elapsed < 1000){
+            // elapsed = getTimeInMs() - start;
+        
+        pthread_mutex_lock(&data_mutex);
+        
+        moveCurrentDataToHistory();
 
-            dips = analyzeLightDips();
-            setDisplay(dips);
+        pthread_mutex_unlock(&data_mutex);
+        
+        dips = analyzeLightDips();
 
-            pthread_mutex_lock(&data_mutex);
+        setHistoryDips(dips);
 
-            printSample(dips);
+        pthread_mutex_lock(&data_mutex);
 
-            printTimingJitter();
+        setDisplay(dips);
 
-            printRecentSamples();
+        
 
-            moveCurrentDataToHistory();
-            setHistorySize(0);
+        printSample(dips);
 
-            pthread_mutex_unlock(&data_mutex);
+        printTimingJitter();
 
-            // Period_statistics_t pStats;
-            // Period_getStatisticsAndClear(PERIOD_EVENT_SAMPLE_LIGHT, &pStats);
+        printRecentSamples();
+
+        setHistorySize(getCurrentSize());
+        setCurrentSize(0);
+        
+
+        pthread_mutex_unlock(&data_mutex);
 
             // Calculate the remaining time to wait before the next second
-            long long remainingTime = 1000 - elapsed;
+            // long long remainingTime = 1000 - elapsed;
 
-            // Check for positive remaining time before sleeping
-            if (remainingTime > 0) {
-                sleepForMs(remainingTime);
-            }
-        }
-
-
-        
-
-        
-    }
+            // // Check for positive remaining time before sleeping
+            // if (remainingTime > 0) {
+            //     sleepForMs(remainingTime);
+            // }
+        } 
     return NULL;
 }
 

@@ -3,10 +3,7 @@
 
 #include <stdint.h>
 
-int initI2cBus(char* bus, int address);
-void writeI2cReg(int i2cFileDesc, unsigned char regAddr, unsigned char value);
-unsigned char readI2cReg(int i2cFileDesc, unsigned char regAddr);
-void writeToFile(const char *file, const char *value);
+
 void runCommandDisplay(char* command);
 void initializeDisplay();
 void setDisplay(int value);
