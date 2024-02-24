@@ -11,6 +11,7 @@
         "potentiometer.h": "c",
         "period_timer.h": "c",
         "unistd.h": "c",
-        "i2c-dev.h": "c"
+        "i2c-dev.h": "c",
+        "sampler.h": "c"
     }
 }

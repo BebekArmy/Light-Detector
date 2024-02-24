@@ -1,5 +1,6 @@
 #include "udp.h"
 #include "sampler.h"
+#include "shutdown.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,12 +16,7 @@
 static pthread_t UDPThread;
 static char previousCommand[MSG_MAX_LEN];
 
-static bool programRunning = true;
 
-bool getProgramRunning()
-{
-    return programRunning;
-}
 
 void *displayUDPcommands(void *args)
 {
@@ -153,7 +149,7 @@ void *displayUDPcommands(void *args)
                    messageTx, strlen(messageTx),
                    0,
                    (struct sockaddr *)&sinRemote, sin_len);
-            programRunning = false;
+            signalShutdown();
             break;
         }
 

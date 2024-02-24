@@ -9,6 +9,7 @@
 #include "period_timer.h"
 #include "sampler.h"
 #include "print_result.h"
+#include "shutdown.h"
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -24,57 +25,54 @@
 #define MSG_MAX_LEN 1024
 #define PORT        12345
 
-void createThreads()
-{
-    Period_init();
+// void createThreads()
+// {
+//     Period_init();
     
-    initializeDisplay();
-    createDisplayThread();
+//     initializeDisplay();
+//     createDisplayThread();
 
-    createPotentiometerThread();
+//     createPotentiometerThread();
 
-    initializePWMLED();
-    createPWMLEDThread();
+//     initializePWMLED();
+//     createPWMLEDThread();
 
-    createLightSensorThread();
+//     createLightSensorThread();
 
-    createUDPThread();
+//     createUDPThread();
 
-    createSamplerThread();
+//     createSamplerThread();
 
-    createPrintingThread();
-}
+//     createPrintingThread();
+// }
 
-void joinThreads()
-{
-    shutdownSampler();
-    shutdownPrintingThread();
-    shutdownDisplay();
-    shutdownPWMLED();
-    shutdownPotentiometer();
-    shutdownLightSensor();
+// void joinThreads()
+// {
+//     shutdownSampler();
+//     shutdownPrintingThread();
+//     shutdownDisplay();
+//     shutdownPWMLED();
+//     shutdownPotentiometer();
+//     shutdownLightSensor();
 
 
-    joinSamplerThread();
-    joinPrintingThread();
-    joinUDPThread();
-    joinDisplayThread();
-    joinPotentiometerThread();
-    joinPWMLEDThread();
-    joinLightSensorThread();
+//     joinSamplerThread();
+//     joinPrintingThread();
+//     joinUDPThread();
+//     joinDisplayThread();
+//     joinPotentiometerThread();
+//     joinPWMLEDThread();
+//     joinLightSensorThread();
 
-    Period_cleanup();
-}
+//     Period_cleanup();
+// }
 
 int main()
 {
-    bool isRunning = true;
 
     createThreads();
 
-    while(isRunning){
-        isRunning = getProgramRunning();
-    }
+    waitShutdown();
 
     joinThreads();
     

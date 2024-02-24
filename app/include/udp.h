@@ -8,7 +8,6 @@ It has the "stop" command to exit the program gracefully.
 
 #include <stdbool.h>
 
-bool getProgramRunning();
 void createUDPThread();
 void joinUDPThread();
 
