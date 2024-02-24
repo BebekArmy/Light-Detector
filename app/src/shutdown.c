@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-pthread_mutex_t shutdowMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t shutdownMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t shutdownCond = PTHREAD_COND_INITIALIZER;
 
 void createThreads()
@@ -60,14 +60,14 @@ void joinThreads()
 
 void waitShutdown()
 {
-    pthread_mutex_lock(&shutdowMutex);
-    pthread_cond_wait(&shutdownCond, &shutdowMutex);
-    pthread_mutex_unlock(&shutdowMutex);
+    pthread_mutex_lock(&shutdownMutex);
+    pthread_cond_wait(&shutdownCond, &shutdownMutex);
+    pthread_mutex_unlock(&shutdownMutex);
 }
 
 void signalShutdown()
 {
-    pthread_mutex_lock(&shutdowMutex);
+    pthread_mutex_lock(&shutdownMutex);
     pthread_cond_signal(&shutdownCond);
-    pthread_mutex_unlock(&shutdowMutex);
+    pthread_mutex_unlock(&shutdownMutex);
 }

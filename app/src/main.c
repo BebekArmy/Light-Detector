@@ -25,57 +25,13 @@
 #define MSG_MAX_LEN 1024
 #define PORT        12345
 
-// void createThreads()
-// {
-//     Period_init();
-    
-//     initializeDisplay();
-//     createDisplayThread();
-
-//     createPotentiometerThread();
-
-//     initializePWMLED();
-//     createPWMLEDThread();
-
-//     createLightSensorThread();
-
-//     createUDPThread();
-
-//     createSamplerThread();
-
-//     createPrintingThread();
-// }
-
-// void joinThreads()
-// {
-//     shutdownSampler();
-//     shutdownPrintingThread();
-//     shutdownDisplay();
-//     shutdownPWMLED();
-//     shutdownPotentiometer();
-//     shutdownLightSensor();
-
-
-//     joinSamplerThread();
-//     joinPrintingThread();
-//     joinUDPThread();
-//     joinDisplayThread();
-//     joinPotentiometerThread();
-//     joinPWMLEDThread();
-//     joinLightSensorThread();
-
-//     Period_cleanup();
-// }
-
 int main()
 {
-
     createThreads();
 
     waitShutdown();
 
     joinThreads();
     
-
     return 0;
 }
